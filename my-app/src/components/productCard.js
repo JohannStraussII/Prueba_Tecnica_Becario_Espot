@@ -5,7 +5,8 @@ const ProductCard = ({ product }) => {
     <div className="product-card">
       <img src={product.image} alt={product.name} />
       <h2>{product.name}</h2>
-      <p>{product.category}</p>
+      <p>{product.main_category}</p>
+      <p>{product.sub_category}</p>
       <p>Rating: {product.ratings}</p>
       <p>Price: ${product.discount_price}</p>
     </div>

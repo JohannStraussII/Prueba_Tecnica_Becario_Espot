@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import CategoryDropdown from './CategoryDropdown';
 
-const FilterPanel = ({ categories, onFilterChange }) => {
+const FilterPanel = ({ onFilterChange }) => {
   const [category, setCategory] = useState('');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
 
-  const handleFilterChange = () => {
+  const handleApplyFilters = () => {
     onFilterChange({
       category,
       minPrice: minPrice ? parseFloat(minPrice) : undefined,
@@ -16,7 +15,13 @@ const FilterPanel = ({ categories, onFilterChange }) => {
 
   return (
     <div className="filter-panel">
-      <CategoryDropdown categories={categories} selectedCategory={category} onSelectCategory={setCategory} />
+      <select value={category} onChange={(e) => setCategory(e.target.value)}>
+        <option value="">All Categories</option>
+        <option value="tv, audio & cameras">TV, Audio & Cameras</option>
+        <option value="computers & tablets">Computers & Tablets</option>
+        <option value="home appliances">Home Appliances</option>
+        {/* Agrega más categorías según sea necesario */}
+      </select>
       <input
         type="number"
         placeholder="Min Price"
@@ -29,7 +34,7 @@ const FilterPanel = ({ categories, onFilterChange }) => {
         value={maxPrice}
         onChange={(e) => setMaxPrice(e.target.value)}
       />
-      <button onClick={handleFilterChange}>Apply Filters</button>
+      <button onClick={handleApplyFilters}>Apply Filters</button>
     </div>
   );
 };

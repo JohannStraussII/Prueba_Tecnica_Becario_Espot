@@ -1,7 +1,6 @@
 import React from 'react';
 
 const RatingDistribution = ({ products }) => {
-  // Lógica para calcular la distribución de calificaciones
   const ratingRanges = [1, 2, 3, 4, 5];
   const distribution = ratingRanges.map((range) => {
     const count = products.filter(product => {

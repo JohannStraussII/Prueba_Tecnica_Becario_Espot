@@ -1,7 +1,6 @@
 import React from 'react';
 
 const PriceDistribution = ({ products }) => {
-  // Lógica para calcular la distribución de precios
   const priceRanges = [0, 50, 100, 200, 500, 1000];
   const distribution = priceRanges.map((range, index) => {
     const count = products.filter(product => {

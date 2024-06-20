@@ -3,49 +3,51 @@ import FilterPanel from './FilterPanel';
 import ProductCard from './ProductCard';
 import PriceDistribution from './PriceDistribution';
 import RatingDistribution from './RatingDistribution';
+import '../styles/Dashboard.css'; // Asegúrate de que esta ruta sea correcta
 
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    // Cargar los productos desde la base de datos o un archivo
-    fetch('/path/to/your/products.json')  // Asegúrate de actualizar esta ruta
-      .then((response) => response.json())
-      .then((data) => {
+    fetch('http://127.0.0.1:5000/api/products')
+      .then(response => response.json())
+      .then(data => {
         setProducts(data);
-        setFilteredProducts(data);
-        const uniqueCategories = [...new Set(data.map(product => product.category))];
-        setCategories(uniqueCategories);
-      });
+        setFilteredProducts(data); // Muestra todos los productos inicialmente
+      })
+      .catch(error => console.error('Error fetching products:', error));
   }, []);
 
   const handleFilterChange = (filters) => {
     let filtered = products;
 
     if (filters.category) {
-      filtered = filtered.filter((product) => product.category === filters.category);
+      filtered = filtered.filter(product => product.main_category === filters.category);
     }
     if (filters.minPrice !== undefined) {
-      filtered = filtered.filter((product) => product.discount_price >= filters.minPrice);
+      filtered = filtered.filter(product => product.discount_price >= filters.minPrice);
     }
     if (filters.maxPrice !== undefined) {
-      filtered = filtered.filter((product) => product.discount_price <= filters.maxPrice);
+      filtered = filtered.filter(product => product.discount_price <= filters.maxPrice);
     }
 
-    setFilteredProducts(filtered);
+    setFilteredProducts(filtered.slice(0, 10)); // Limita los productos filtrados a 10
   };
 
   return (
     <div className="dashboard">
-      <FilterPanel categories={categories} onFilterChange={handleFilterChange} />
-      <PriceDistribution products={filteredProducts} />
-      <RatingDistribution products={filteredProducts} />
-      <div className="product-list">
-        {filteredProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+      <div className="filters-and-products">
+        <FilterPanel onFilterChange={handleFilterChange} />
+        <div className="product-list">
+          {filteredProducts.map(product => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </div>
+      <div className="distributions">
+        <PriceDistribution products={filteredProducts} />
+        <RatingDistribution products={filteredProducts} />
       </div>
     </div>
   );
