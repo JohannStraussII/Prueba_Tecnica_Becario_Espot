@@ -2,20 +2,39 @@ from quart import Blueprint, jsonify
 from sqlalchemy.orm import Session
 from database import SessionLocal
 from models import Product
-import polar as pl
 
 bp = Blueprint('api', __name__)
 
-@bp.route('/api/categories', methods=['GET'])
-async def get_categories():
+@bp.route('/api/main_categories', methods=['GET'])
+async def get_main_categories():
     async with SessionLocal() as session:
-        categories = session.query(Product.category).distinct().all()
+        categories = session.query(Product.main_category).distinct().all()
         categories = [category[0] for category in categories]
         return jsonify(categories)
 
-@bp.route('/api/products/<category>', methods=['GET'])
-async def get_products_by_category(category):
+@bp.route('/api/sub_categories', methods=['GET'])
+async def get_sub_categories():
     async with SessionLocal() as session:
-        products = session.query(Product).filter(Product.category == category).all()
-        df = pl.DataFrame([product.__dict__ for product in products])
-        return jsonify(df.to_dict(orient='records'))
+        sub_categories = session.query(Product.sub_category).distinct().all()
+        sub_categories = [sub_category[0] for sub_category in sub_categories]
+        return jsonify(sub_categories)
+
+@bp.route('/api/products/<main_category>', methods=['GET'])
+async def get_products_by_main_category(main_category):
+    async with SessionLocal() as session:
+        products = session.query(Product).filter(Product.main_category == main_category).all()
+        result = [
+            {
+                'name': product.name,
+                'main_category': product.main_category,
+                'sub_category': product.sub_category,
+                'image': product.image,
+                'link': product.link,
+                'ratings': product.ratings,
+                'no_of_ratings': product.no_of_ratings,
+                'discount_price': product.discount_price,
+                'actual_price': product.actual_price
+            }
+            for product in products
+        ]
+        return jsonify(result)

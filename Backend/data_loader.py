@@ -5,44 +5,51 @@ from models import Base, Product
 
 def load_data(db: Session, csv_file: str):
     df = pd.read_csv(csv_file)
+
+    # Filtrar filas con valores null en las columnas críticas
+    df = df.dropna(subset=['ratings', 'no_of_ratings', 'discount_price', 'actual_price'])
+
     for _, row in df.iterrows():
-        # Convertir precio de string a float, eliminando el símbolo $
-        price_str = row['Selling Price']
-        list_price_str = row['List Price']
+        try:
+            ratings = float(row['ratings']) if row['ratings'] else None
+        except ValueError:
+            ratings = None
         
-        if isinstance(price_str, float):  # Si ya es un float, no hacer nada
-            price = price_str
-        else:
-            try:
-                price = float(str(price_str).replace('$', '').replace(',', ''))
-            except ValueError:
-                price = 0.0  # Asignar un valor predeterminado en caso de error
+        try:
+            no_of_ratings = int(row['no_of_ratings']) if row['no_of_ratings'] else None
+        except ValueError:
+            no_of_ratings = None
         
-        if isinstance(list_price_str, float):  # Si ya es un float, no hacer nada
-            list_price = list_price_str
-        else:
-            try:
-                list_price = float(str(list_price_str).replace('$', '').replace(',', ''))
-            except ValueError:
-                list_price = 0.0  # Asignar un valor predeterminado en caso de error
+        try:
+            discount_price = float(row['discount_price']) if row['discount_price'] else None
+        except ValueError:
+            discount_price = None
+        
+        try:
+            actual_price = float(row['actual_price']) if row['actual_price'] else None
+        except ValueError:
+            actual_price = None
+
+        # Ignorar filas que aún tengan valores None en las columnas críticas
+        if ratings is None or no_of_ratings is None or discount_price is None or actual_price is None:
+            continue
 
         product = Product(
-            product_id=row['Uniq Id'],  # Nombre real de la columna
-            product_name=row['Product Name'],
-            brand_name=row['Brand Name'],
-            category=row['Category'],  # Nombre real de la columna
-            price=price,  # Precio convertido a float
-            list_price=list_price,
-            quantity=row['Quantity'],
-            stock=row['Stock'],
-            shipping_weight=row['Shipping Weight'],
-            product_dimensions=row['Product Dimensions'],
-            asin=row['Asin']
+            name=row['name'],
+            main_category=row['main_category'],
+            sub_category=row['sub_category'],
+            image=row['image'],
+            link=row['link'],
+            ratings=ratings,
+            no_of_ratings=no_of_ratings,
+            discount_price=discount_price,
+            actual_price=actual_price
         )
         db.add(product)
+    
     db.commit()
 
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
-    load_data(db, 'C:/Users/johan/Downloads/Prueba_Coyo/Prueba_Tecnica_Becario_Espot/Backend/Data/marketing_sample_for_amazon_com-ecommerce__20200101_20200131__10k_data.csv')
+    load_data(db, 'C:/Users/johan/Downloads/Prueba_Coyo/Prueba_Tecnica_Becario_Espot/Backend/Data/Master_corrected.csv')
