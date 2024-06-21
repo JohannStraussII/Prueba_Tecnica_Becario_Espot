@@ -1,38 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const FilterPanel = ({ onFilterChange }) => {
-  const [category, setCategory] = useState('');
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [filters, setFilters] = useState({ category: '', minPrice: '', maxPrice: '' });
+
+  useEffect(() => {
+    fetch('http://127.0.0.1:5000/api/main_categories')
+      .then(response => response.json())
+      .then(data => setCategories(data))
+      .catch(error => console.error('Error fetching categories:', error));
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFilters({
+      ...filters,
+      [name]: value
+    });
+  };
 
   const handleApplyFilters = () => {
-    onFilterChange({
-      category,
-      minPrice: minPrice ? parseFloat(minPrice) : undefined,
-      maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
-    });
+    onFilterChange(filters);
   };
 
   return (
     <div className="filter-panel">
-      <select value={category} onChange={(e) => setCategory(e.target.value)}>
+      <select name="category" value={filters.category} onChange={handleChange}>
         <option value="">All Categories</option>
-        <option value="tv, audio & cameras">TV, Audio & Cameras</option>
-        <option value="computers & tablets">Computers & Tablets</option>
-        <option value="home appliances">Home Appliances</option>
-        {/* Agrega más categorías según sea necesario */}
+        {categories.map((category, index) => (
+          <option key={index} value={category}>{category}</option>
+        ))}
       </select>
       <input
         type="number"
+        name="minPrice"
         placeholder="Min Price"
-        value={minPrice}
-        onChange={(e) => setMinPrice(e.target.value)}
+        value={filters.minPrice}
+        onChange={handleChange}
       />
       <input
         type="number"
+        name="maxPrice"
         placeholder="Max Price"
-        value={maxPrice}
-        onChange={(e) => setMaxPrice(e.target.value)}
+        value={filters.maxPrice}
+        onChange={handleChange}
       />
       <button onClick={handleApplyFilters}>Apply Filters</button>
     </div>

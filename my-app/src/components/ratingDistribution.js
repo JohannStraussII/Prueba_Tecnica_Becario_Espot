@@ -1,21 +1,18 @@
 import React from 'react';
 
-const RatingDistribution = ({ products }) => {
-  const ratingRanges = [1, 2, 3, 4, 5];
-  const distribution = ratingRanges.map((range) => {
-    const count = products.filter(product => {
-      const rating = product.ratings;
-      return Math.floor(rating) === range;
-    }).length;
-    return { range, count };
+const RatingDistribution = ({ products = [] }) => { // Inicializar products como array vacío
+  const ratings = [1, 2, 3, 4, 5];
+  const distribution = ratings.map(rating => {
+    const count = products.filter(product => product.ratings === rating).length;
+    return { rating, count };
   });
 
   return (
     <div className="rating-distribution">
-      <h2>Rating Distribution</h2>
+      <h3>Rating Distribution</h3>
       <ul>
-        {distribution.map(({ range, count }) => (
-          <li key={range}>Rating {range}: {count}</li>
+        {distribution.map(({ rating, count }) => (
+          <li key={rating}>Rating {rating}: {count}</li>
         ))}
       </ul>
     </div>
