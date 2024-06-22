@@ -29,8 +29,8 @@ Esta aplicación web permite a los usuarios visualizar, filtrar y paginar produc
 
 1. Clona el repositorio:
     ``bash
-    git clone <URL_DEL_REPOSITORIO>
-    cd <NOMBRE_DEL_REPOSITORIO>/Backend
+    git clone <https://github.com/JohannStraussII/Prueba_Tecnica_Becario_Espot/tree/main>
+    cd <https://github.com/JohannStraussII/Prueba_Tecnica_Becario_Espot/tree/main/Backend>/Backend
     ``
 
 2. Crea y activa un entorno virtual:
